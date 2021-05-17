@@ -56,8 +56,8 @@ def _output_to_console(data):
         print(track_string)
 
 def _output_to_file(data, outfile):
-    with open(outfile, 'w') as f:
-        f.write(f'{_get_track_string(data)}\n')
+    outfile.write(f'{_get_track_string(data)}\n')
+    outfile.flush()
 
 class Listener():
     """Listens to Traktor broadcast, given a port."""
@@ -79,6 +79,8 @@ class Listener():
             print(f'{self.outfile} is a directory!')
             raise IsADirectoryError
 
+        self.output_file = open(outpath, "a")
+
     def start(self):
         """Start listening to Traktor broadcast."""
 
@@ -93,7 +95,7 @@ class Listener():
         if self.outfile:
             try:
                 self._create_outfile()
-                callbacks.append(functools.partial(_output_to_file, outfile=self.outfile))
+                callbacks.append(functools.partial(_output_to_file, outfile=self.output_file))
             except:
                 print(f'Error encountered while trying to write to {self.outfile}.')
                 return
